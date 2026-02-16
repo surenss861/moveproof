@@ -1,0 +1,15 @@
+import { createClient } from "@supabase/supabase-js";
+
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!url || !anon) {
+  console.warn("Supabase URL or anon key missing. Auth and data will be unavailable.");
+}
+
+export const supabase = createClient(url ?? "", anon ?? "", {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
