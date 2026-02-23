@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase/client";
+import { getSupabase } from "@/lib/supabase/client";
 
 /** App-facing user: uid for compatibility with existing code (uid = id) */
 export type AppUser = User & { uid: string };
@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
+    getSupabase().auth.getSession().then(({ data: { session: s } }) => {
       if (!mounted) return;
       setSession(s);
       setUser(s?.user ? toAppUser(s.user) : null);
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, s) => {
+    } = getSupabase().auth.onAuthStateChange((_event, s) => {
       if (!mounted) return;
       setSession(s);
       setUser(s?.user ? toAppUser(s.user) : null);
@@ -52,17 +52,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await getSupabase().auth.signInWithPassword({ email, password });
     if (error) throw error;
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await getSupabase().auth.signUp({ email, password });
     if (error) throw error;
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await getSupabase().auth.signOut();
   };
 
   return (

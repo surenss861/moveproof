@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/client";
+import { getSupabase } from "@/lib/supabase/client";
 import type { RoomId } from "@/lib/types";
 
 export type PackType = "move_in" | "move_out" | "dispute";
@@ -40,7 +40,7 @@ export async function createPack(
   address: string,
   landlordName?: string
 ): Promise<string> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("packs")
     .insert({
       user_id: userId,
@@ -56,7 +56,7 @@ export async function createPack(
 }
 
 export async function getPack(packId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("packs")
     .select("*")
     .eq("id", packId)
@@ -66,7 +66,7 @@ export async function getPack(packId: string) {
 }
 
 export async function listPacks(): Promise<PackRow[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("packs")
     .select("*")
     .order("created_at", { ascending: false });
@@ -75,7 +75,7 @@ export async function listPacks(): Promise<PackRow[]> {
 }
 
 export async function getEvidenceForPack(packId: string): Promise<EvidenceRow[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("evidence_items")
     .select("*")
     .eq("pack_id", packId)
@@ -109,7 +109,7 @@ export async function addEvidence(
     note: note || null,
   };
   if (evidenceId) insert.id = evidenceId;
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("evidence_items")
     .insert(insert)
     .select()
@@ -123,7 +123,7 @@ export async function completePack(
   packHash: string,
   generatedAt: string
 ): Promise<void> {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from("packs")
     .update({
       completed_at: new Date().toISOString(),
@@ -137,13 +137,13 @@ export async function completePack(
 }
 
 export async function getPackForVerify(packId: string) {
-  const { data: pack, error: packErr } = await supabase
+  const { data: pack, error: packErr } = await getSupabase()
     .from("packs")
     .select("id, pack_hash, generated_at")
     .eq("id", packId)
     .single();
   if (packErr || !pack) return null;
-  const { data: items } = await supabase
+  const { data: items } = await getSupabase()
     .from("evidence_items")
     .select("id, sha256, uploaded_at")
     .eq("pack_id", packId)

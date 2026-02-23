@@ -1,15 +1,18 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+let _client: SupabaseClient | null = null;
 
-if (!url || !anon) {
-  console.warn("Supabase URL or anon key missing. Auth and data will be unavailable.");
+/** Browser-safe Supabase client with lazy initialization. */
+export function getSupabase(): SupabaseClient {
+  if (!_client) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
+    _client = createClient(url, anon, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    });
+  }
+  return _client;
 }
-
-export const supabase = createClient(url ?? "", anon ?? "", {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});

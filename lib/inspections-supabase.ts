@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase/client";
+import { getSupabase } from "@/lib/supabase/client";
 import * as db from "@/lib/db/packs";
 import { sha256Hex, computePackHash } from "@/lib/hash";
 import type { Inspection, PhotoRecord, RoomId } from "@/lib/types";
@@ -122,7 +122,7 @@ export async function uploadInspectionPhoto(
   const ext = file.name.split(".").pop() || "jpg";
   const storagePath = `${userId}/${inspectionId}/${evidenceId}.${ext}`;
 
-  const { error: uploadErr } = await supabase.storage
+  const { error: uploadErr } = await getSupabase().storage
     .from(BUCKET)
     .upload(storagePath, buf, {
       contentType: file.type,
@@ -162,6 +162,6 @@ export async function uploadInspectionPhoto(
 }
 
 function getEvidencePublicUrl(storagePath: string): string {
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
+  const { data } = getSupabase().storage.from(BUCKET).getPublicUrl(storagePath);
   return data.publicUrl;
 }
