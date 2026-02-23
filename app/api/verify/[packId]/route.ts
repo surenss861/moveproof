@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 export async function GET(
   _req: NextRequest,
@@ -11,7 +11,8 @@ export async function GET(
   }
 
   try {
-    const { data: pack, error: packErr } = await supabaseAdmin
+    const db = getSupabaseAdmin();
+    const { data: pack, error: packErr } = await db
       .from("packs")
       .select("id, pack_hash, generated_at")
       .eq("id", packId)
@@ -21,7 +22,7 @@ export async function GET(
       return NextResponse.json({ error: "Pack not found" }, { status: 404 });
     }
 
-    const { data: items } = await supabaseAdmin
+    const { data: items } = await db
       .from("evidence_items")
       .select("id, sha256, uploaded_at")
       .eq("pack_id", packId)
