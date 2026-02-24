@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { PageTransition } from "@/components/PageTransition";
 import { Home, FileCheck, Zap } from "lucide-react";
 
 export default function AppLayout({
@@ -49,7 +50,9 @@ export default function AppLayout({
           {user.email}
         </span>
       </header>
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 flex flex-col">
+        <PageTransition>{children}</PageTransition>
+      </main>
       {showNav && (
         <nav className="fixed bottom-0 left-0 right-0 flex items-center justify-around py-2 px-4 bg-slate-800/95 border-t border-slate-700/50 app-safe">
           <Link

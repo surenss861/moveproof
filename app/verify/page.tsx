@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { VerifyScanner } from "@/components/VerifyScanner";
+import { HoloBadge } from "@/components/HoloBadge";
 
 type VerifyStatus = "idle" | "verified" | "error";
 
@@ -100,23 +101,31 @@ export default function VerifyPage() {
           {error && <p className="mt-4 text-red-400 text-sm">{error}</p>}
 
           {result && result.ok && (
-            <div className="mt-4 rounded-xl border border-emerald-300/20 bg-emerald-300/5 p-4 text-sm">
+            <div className="mt-4 rounded-xl border border-emerald-300/20 bg-emerald-300/5 p-4 text-sm space-y-3">
+              {/* Holographic Pack ID — the shareable artifact */}
+              {result.packId && (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-white/50 text-xs">Pack ID</span>
+                  <HoloBadge packId={result.packId} size="sm" />
+                </div>
+              )}
+
               <div className="text-white/90">
                 Status: <span className="text-emerald-300 font-semibold">Verified</span>
               </div>
-              <div className="mt-2 text-white/70 text-xs">
+              <div className="text-white/70 text-xs">
                 {result.createdAt && `Created: ${result.createdAt}`}
                 {result.generatedAtServer && `Generated: ${result.generatedAtServer}`}
                 {result.integrity && ` • Integrity: ${result.integrity}`}
               </div>
               {result.packHash && (
-                <div className="mt-2">
+                <div>
                   <p className="text-white/60 text-xs">Pack hash</p>
-                  <p className="text-white font-mono text-xs break-all">{result.packHash}</p>
+                  <p className="text-white font-mono text-xs break-all mt-0.5">{result.packHash}</p>
                 </div>
               )}
               {result.items && result.items.length > 0 && (
-                <div className="mt-2">
+                <div>
                   <p className="text-white/60 text-xs">Evidence items ({result.items.length})</p>
                   <ul className="mt-1 space-y-0.5 text-xs text-white/70 font-mono">
                     {result.items.map((item, i) => (

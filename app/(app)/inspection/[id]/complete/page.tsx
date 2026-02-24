@@ -8,6 +8,7 @@ import type { Inspection } from "@/lib/types";
 import { EvidencePackDocument } from "@/components/EvidencePackDocument";
 import { FileCheck, Download, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { HoloBadge } from "@/components/HoloBadge";
 
 export default function InspectionCompletePage() {
   const params = useParams();
@@ -135,9 +136,10 @@ export default function InspectionCompletePage() {
         </p>
       </div>
 
-      <p className="text-slate-500 text-xs mb-4">
-        Pack ID: {inspection.packId ?? inspection.id} · Verify at /verify
-      </p>
+      <div className="mb-4 flex items-center gap-3 flex-wrap">
+        <HoloBadge packId={inspection.packId ?? inspection.id} />
+        <span className="text-slate-500 text-xs">Verify at /verify</span>
+      </div>
 
       {canComplete ? (
         <button
