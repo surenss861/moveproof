@@ -3,6 +3,7 @@ import { Reveal, RevealItem, RevealStagger } from "@/components/Reveal";
 import { ProofCardScrollReveal } from "@/components/ProofCardScrollReveal";
 import { RegionSelector } from "@/components/RegionSelector";
 import { VaultPricingToggle } from "@/components/VaultPricingToggle";
+import { HoloBadge } from "@/components/HoloBadge";
 
 export default function HomePage() {
   return (
@@ -21,7 +22,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/signup"
-              className="rounded-lg bg-white text-black px-4 py-2 text-sm font-medium hover:opacity-90 transition"
+              className="rounded-lg bg-white text-black px-4 py-2 text-sm font-medium hover:opacity-90 transition active:scale-[0.96] transition-transform"
             >
               Get started
             </Link>
@@ -46,19 +47,24 @@ export default function HomePage() {
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
                   href="/create"
-                  className="rounded-xl bg-white text-black px-5 py-3 text-sm font-semibold hover:opacity-90"
+                  className="rounded-xl bg-white text-black px-5 py-3 text-sm font-semibold hover:opacity-90 active:scale-[0.97] transition-transform"
                 >
                   Create my Evidence Pack
                 </Link>
                 <Link
                   href="/verify"
-                  className="rounded-xl border border-white/15 px-5 py-3 text-sm text-white/80 hover:bg-white/5"
+                  className="rounded-xl border border-white/15 px-5 py-3 text-sm text-white/80 hover:bg-white/5 active:scale-[0.97] transition-transform"
                 >
                   Verify a Pack ID
                 </Link>
-                <div className="text-xs text-white/60">
-                  Pack ID + tamper-evident hash. Anyone can verify.
-                </div>
+              </div>
+
+              {/* Live demo of the Pack ID artifact */}
+              <div className="mt-6 flex items-center gap-3 flex-wrap">
+                <HoloBadge packId="MP-7A3B-F291" size="sm" />
+                <span className="text-xs text-white/40">
+                  Hover to see the holographic seal — this is what you share
+                </span>
               </div>
 
               <div className="mt-8">
@@ -229,7 +235,7 @@ export default function HomePage() {
                 LTB-ready evidence for Ontario. Court-ready evidence everywhere.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Link href="/signup" className="rounded-xl bg-white text-black px-5 py-3 text-sm font-semibold hover:opacity-90">
+                <Link href="/signup" className="rounded-xl bg-white text-black px-5 py-3 text-sm font-semibold hover:opacity-90 active:scale-[0.97] transition-transform">
                   Get started
                 </Link>
                 <span className="text-xs text-white/60">Works across the US & Canada</span>

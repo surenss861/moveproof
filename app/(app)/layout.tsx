@@ -12,7 +12,7 @@ export default function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useAuth();
+  const { user, loading, isVaultActive } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const redirectSent = useRef(false);
@@ -46,9 +46,16 @@ export default function AppLayout({
         <Link href="/dashboard" className="text-lg font-bold text-cyan-400">
           MoveProof
         </Link>
-        <span className="text-slate-500 text-sm truncate max-w-[140px]">
-          {user.email}
-        </span>
+        <div className="flex items-center gap-2 min-w-0">
+          {isVaultActive && (
+            <span className="shrink-0 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 text-[10px] font-semibold tracking-widest text-cyan-300 uppercase">
+              Vault
+            </span>
+          )}
+          <span className="text-slate-500 text-sm truncate max-w-[120px]">
+            {user.email}
+          </span>
+        </div>
       </header>
       <main className="flex-1 flex flex-col">
         <PageTransition>{children}</PageTransition>

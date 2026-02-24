@@ -2,14 +2,51 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Copy, Check } from "lucide-react";
 import { VerifyScanner } from "@/components/VerifyScanner";
 import { HoloBadge } from "@/components/HoloBadge";
+import { HashReveal } from "@/components/HashReveal";
 
 type VerifyStatus = "idle" | "verified" | "error";
 
-// Stub format from /create: MP-XXXX-XXXX
 const STUB_FORMAT = /^MP-[A-F0-9]{4}-[A-F0-9]{4}$/i;
+
+/** Small inline copy button that swaps to a checkmark on success */
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      /* clipboard not available */
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      aria-label={copied ? "Copied" : "Copy to clipboard"}
+      className="rounded-lg border border-white/15 p-1.5 text-white/50 hover:text-white/80 hover:border-white/30 transition active:scale-90"
+    >
+      {copied ? (
+        <Check className="w-3.5 h-3.5 text-emerald-400" />
+      ) : (
+        <Copy className="w-3.5 h-3.5" />
+      )}
+    </button>
+  );
+}
+
+/** Shimmer skeleton for loading state */
+function Skeleton({ className = "" }: { className?: string }) {
+  return (
+    <div className={`rounded bg-white/5 animate-pulse ${className}`} />
+  );
+}
 
 export default function VerifyPage() {
   const [packId, setPackId] = useState("");
@@ -20,13 +57,22 @@ export default function VerifyPage() {
     generatedAtServer?: string;
     createdAt?: string;
     integrity?: string;
-    items?: Array<{ evidenceId: string | null; sha256: string | null; uploadedAtServer: string | null }>;
+    items?: Array<{
+      evidenceId: string | null;
+      sha256: string | null;
+      uploadedAtServer: string | null;
+    }>;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const isVerified = result && (result.ok !== false || (result.packId && !("error" in result)));
-  const scannerStatus: VerifyStatus = isVerified ? "verified" : error ? "error" : "idle";
+  const isVerified =
+    result && (result.ok !== false || (result.packId && !("error" in result)));
+  const scannerStatus: VerifyStatus = isVerified
+    ? "verified"
+    : error
+    ? "error"
+    : "idle";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,7 +82,6 @@ export default function VerifyPage() {
     setResult(null);
     setLoading(true);
     try {
-      // Stub format: POST /api/verify
       if (STUB_FORMAT.test(id.toUpperCase())) {
         const res = await fetch("/api/verify", {
           method: "POST",
@@ -48,7 +93,6 @@ export default function VerifyPage() {
         if (!data.ok) setError("Pack not found");
         return;
       }
-      // Real packs (UUID): GET /api/verify/[packId]
       const res = await fetch(`/api/verify/${encodeURIComponent(id)}`);
       const data = await res.json();
       if (!res.ok) {
@@ -68,7 +112,10 @@ export default function VerifyPage() {
   return (
     <div className="min-h-screen bg-[#080705] text-[#FFFFFA] px-4 py-10">
       <div className="max-w-lg mx-auto">
-        <Link href="/" className="text-cyan-400 text-sm mb-6 inline-block hover:underline">
+        <Link
+          href="/"
+          className="text-cyan-400 text-sm mb-6 inline-block hover:underline"
+        >
           ← MoveProof
         </Link>
         <h1 className="text-3xl font-semibold mb-2">Verify a Pack ID</h1>
@@ -91,46 +138,89 @@ export default function VerifyPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-60 hover:opacity-90 flex items-center justify-center gap-2 w-full"
+              className="mt-4 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black disabled:opacity-60 hover:opacity-90 flex items-center justify-center gap-2 w-full active:scale-[0.97] transition-transform"
             >
               <Search className="w-5 h-5" />
               {loading ? "Verifying…" : "Verify"}
             </button>
           </form>
 
+          {/* Loading skeleton */}
+          {loading && (
+            <div className="mt-4 space-y-2">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-full mt-3" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-2/3" />
+            </div>
+          )}
+
           {error && <p className="mt-4 text-red-400 text-sm">{error}</p>}
 
           {result && result.ok && (
-            <div className="mt-4 rounded-xl border border-emerald-300/20 bg-emerald-300/5 p-4 text-sm space-y-3">
-              {/* Holographic Pack ID — the shareable artifact */}
+            <div className="mt-4 rounded-xl border border-emerald-300/20 bg-emerald-300/5 p-4 text-sm space-y-4">
+              {/* Holographic Pack ID + copy */}
               {result.packId && (
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-white/50 text-xs">Pack ID</span>
                   <HoloBadge packId={result.packId} size="sm" />
+                  <CopyButton text={result.packId} />
+                  <span className="text-white/40 text-xs">Share with landlord or tribunal</span>
                 </div>
               )}
 
               <div className="text-white/90">
-                Status: <span className="text-emerald-300 font-semibold">Verified</span>
+                Status:{" "}
+                <span className="text-emerald-300 font-semibold">Verified</span>
               </div>
-              <div className="text-white/70 text-xs">
-                {result.createdAt && `Created: ${result.createdAt}`}
-                {result.generatedAtServer && `Generated: ${result.generatedAtServer}`}
-                {result.integrity && ` • Integrity: ${result.integrity}`}
+
+              <div className="text-white/60 text-xs space-y-0.5">
+                {result.createdAt && <div>Created: {result.createdAt}</div>}
+                {result.generatedAtServer && (
+                  <div>Generated: {result.generatedAtServer}</div>
+                )}
+                {result.integrity && <div>Integrity: {result.integrity}</div>}
               </div>
+
+              {/* Pack hash — scramble animation */}
               {result.packHash && (
                 <div>
-                  <p className="text-white/60 text-xs">Pack hash</p>
-                  <p className="text-white font-mono text-xs break-all mt-0.5">{result.packHash}</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-white/60 text-xs">Pack hash</p>
+                    <CopyButton text={result.packHash} />
+                  </div>
+                  <HashReveal
+                    hash={result.packHash}
+                    className="text-xs"
+                    duration={650}
+                  />
                 </div>
               )}
+
+              {/* Evidence item hashes */}
               {result.items && result.items.length > 0 && (
                 <div>
-                  <p className="text-white/60 text-xs">Evidence items ({result.items.length})</p>
-                  <ul className="mt-1 space-y-0.5 text-xs text-white/70 font-mono">
+                  <p className="text-white/60 text-xs mb-1">
+                    Evidence items ({result.items.length})
+                  </p>
+                  <ul className="space-y-1">
                     {result.items.map((item, i) => (
-                      <li key={i}>
-                        {item.evidenceId ?? `Item ${i + 1}`} · {item.sha256?.slice(0, 12)}...
+                      <li
+                        key={i}
+                        className="text-xs text-white/60 font-mono flex items-center gap-2"
+                      >
+                        <span className="text-white/30 shrink-0">
+                          {item.evidenceId ?? `#${i + 1}`}
+                        </span>
+                        {item.sha256 ? (
+                          <HashReveal
+                            hash={item.sha256.slice(0, 16) + "…"}
+                            duration={500 + i * 60}
+                          />
+                        ) : (
+                          <span>—</span>
+                        )}
                       </li>
                     ))}
                   </ul>

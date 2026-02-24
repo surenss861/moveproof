@@ -9,6 +9,7 @@ import { EvidencePackDocument } from "@/components/EvidencePackDocument";
 import { FileCheck, Download, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { HoloBadge } from "@/components/HoloBadge";
+import { SealedStamp } from "@/components/SealedStamp";
 
 export default function InspectionCompletePage() {
   const params = useParams();
@@ -125,7 +126,8 @@ export default function InspectionCompletePage() {
 
   return (
     <div className="px-4 py-8 max-w-lg mx-auto">
-      <div className="rounded-2xl bg-proof-green/20 border border-proof-green/40 p-6 text-center mb-6">
+      {/* Success card — SealedStamp overlays this when canComplete */}
+      <div className="relative overflow-hidden rounded-2xl bg-proof-green/20 border border-proof-green/40 p-6 text-center mb-6">
         <FileCheck className="w-12 h-12 text-proof-green mx-auto mb-3" />
         <h1 className="text-xl font-bold text-white mb-1">
           Proof Pack complete
@@ -134,6 +136,8 @@ export default function InspectionCompletePage() {
           Your dispute-ready Evidence Pack (LTB-friendly format) is ready.
           Download the PDF with Chain of Custody and keep it for disputes.
         </p>
+        {/* Stamp only plays once when the pack is unlocked */}
+        {canComplete && <SealedStamp />}
       </div>
 
       <div className="mb-4 flex items-center gap-3 flex-wrap">
@@ -145,7 +149,7 @@ export default function InspectionCompletePage() {
         <button
           onClick={handleDownload}
           disabled={pdfLoading}
-          className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400 disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400 disabled:opacity-50 active:scale-[0.97] transition-transform"
         >
           <Download className="w-5 h-5" />
           {pdfLoading ? "Generating PDF…" : "Download Evidence Pack (PDF)"}
@@ -164,14 +168,14 @@ export default function InspectionCompletePage() {
             <button
               type="button"
               onClick={handleVaultCheckout}
-              className="w-full py-3 rounded-xl bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400 transition"
+              className="w-full py-3 rounded-xl bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400 transition active:scale-[0.97]"
             >
               Subscribe to Vault — $9.99/mo
             </button>
             <button
               type="button"
               onClick={handleOneTimeCheckout}
-              className="w-full py-3 rounded-xl border border-white/20 text-white font-medium hover:bg-white/5 transition"
+              className="w-full py-3 rounded-xl border border-white/20 text-white font-medium hover:bg-white/5 transition active:scale-[0.97]"
             >
               Buy one pack — $39
             </button>
