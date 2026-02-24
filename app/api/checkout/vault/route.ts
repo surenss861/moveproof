@@ -5,29 +5,36 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2023-10-16",
 });
 
-/** One-time $39 Evidence Pack checkout (mode: payment). */
 export async function POST(req: NextRequest) {
   try {
-    const { userId, userEmail, successUrl, cancelUrl } = await req.json();
+    const { interval, userId, userEmail } = await req.json();
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json({ error: "Stripe not configured" }, { status: 502 });
     }
 
-    const priceId = process.env.STRIPE_PRICE_PACK_ONETIME;
+    const priceId =
+      interval === "year"
+        ? process.env.STRIPE_PRICE_VAULT_ANNUAL
+        : process.env.STRIPE_PRICE_VAULT_MONTHLY;
+
     if (!priceId) {
       return NextResponse.json({ error: "Price not configured" }, { status: 502 });
     }
 
+    if (!userId) {
+      return NextResponse.json({ error: "User ID required" }, { status: 400 });
+    }
+
     const origin = req.nextUrl.origin;
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
+      mode: "subscription",
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: userEmail || undefined,
-      metadata: { user_id: userId || "", type: "one_time_pack" },
-      success_url: successUrl || `${origin}/dashboard?pack=success`,
-      cancel_url: cancelUrl || `${origin}/#pricing`,
+      metadata: { user_id: userId },
+      success_url: `${origin}/dashboard?vault=success`,
+      cancel_url: `${origin}/#pricing`,
     });
 
     return NextResponse.json({ url: session.url });

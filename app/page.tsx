@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Reveal, RevealItem, RevealStagger } from "@/components/Reveal";
 import { ProofCardScrollReveal } from "@/components/ProofCardScrollReveal";
 import { RegionSelector } from "@/components/RegionSelector";
+import { VaultPricingToggle } from "@/components/VaultPricingToggle";
 
 export default function HomePage() {
   return (
@@ -209,56 +210,27 @@ export default function HomePage() {
         </section>
 
         {/* PRICING + CTA */}
-        <section className="border-t border-white/5 py-16">
+        <section id="pricing" className="border-t border-white/5 py-16">
           <div className="mx-auto max-w-6xl px-6">
             <Reveal>
-              <h2 className="text-3xl font-semibold">One pack. One-time payment.</h2>
+              <h2 className="text-3xl font-semibold text-center">Simple pricing</h2>
+              <p className="mt-3 text-center text-white/70">
+                Subscribe for ongoing protection, or buy one pack for a single move.
+              </p>
             </Reveal>
 
-            <div className="mt-8 grid gap-6 md:grid-cols-2 items-start">
-              <Reveal className="relative rounded-2xl border border-cyan-300/20 bg-gradient-to-b from-slate-800/80 to-slate-800/40 p-8 hover:shadow-[0_0_32px_rgba(6,182,212,0.12)] transition">
-                <div className="absolute right-4 top-4 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-200">
-                  Most people choose this
-                </div>
-
-                <div className="text-sm text-white/70">Evidence Pack</div>
-                <div className="mt-2 text-5xl font-semibold">$39</div>
-                <div className="mt-2 text-sm text-white/70">One-time. No subscription required.</div>
-                <div className="text-sm text-white/70">Built to be printed + filed.</div>
-
-                <Link
-                  href="/create"
-                  className="mt-6 inline-flex rounded-xl bg-white text-black px-5 py-3 text-sm font-semibold hover:opacity-90"
-                >
-                  Create my pack
-                </Link>
-              </Reveal>
-
-              <Reveal className="rounded-2xl border border-white/10 bg-black/30 p-8">
-                <div className="font-semibold">FAQ</div>
-                <div className="mt-4 space-y-4 text-sm text-white/70">
-                  <div>
-                    <div className="text-white/85 font-medium">Do you support my state/province?</div>
-                    <div className="mt-1">
-                      The evidence pack works everywhere. Ontario has the full jurisdiction module live. More are rolling out.
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-white/85 font-medium">Is this legal advice?</div>
-                    <div className="mt-1">No — structured evidence packaging + checklists. Not a law firm.</div>
-                  </div>
-                </div>
-              </Reveal>
+            <div className="mt-10">
+              <VaultPricingToggle />
             </div>
 
             <Reveal className="mt-12 rounded-2xl border border-white/10 bg-white/5 p-10">
               <h3 className="text-4xl font-semibold">Get your deposit back — with proof.</h3>
               <p className="mt-3 max-w-2xl text-white/70">
-                LTB-ready evidence for Ontario. Court-ready evidence everywhere. Pay once — no subscription required.
+                LTB-ready evidence for Ontario. Court-ready evidence everywhere.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-3">
-                <Link href="/create" className="rounded-xl bg-white text-black px-5 py-3 text-sm font-semibold hover:opacity-90">
-                  Create my Evidence Pack
+                <Link href="/signup" className="rounded-xl bg-white text-black px-5 py-3 text-sm font-semibold hover:opacity-90">
+                  Get started
                 </Link>
                 <span className="text-xs text-white/60">Works across the US & Canada</span>
               </div>
