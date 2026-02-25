@@ -15,6 +15,7 @@ import { ROOMS } from "@/lib/types";
 import { PhotoCapture } from "@/components/PhotoCapture";
 import { format } from "date-fns";
 import { Check, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
 
 export default function InspectionPage() {
@@ -71,12 +72,26 @@ export default function InspectionPage() {
     }
   }
 
-  if (loading || !inspection) {
+  if (loading) {
+    return (
+      <div className="px-4 py-6 max-w-lg mx-auto pb-24">
+        <div className="h-4 w-24 rounded bg-slate-800 animate-pulse mb-6" />
+        <div className="h-5 w-48 rounded bg-slate-800 animate-pulse mb-2" />
+        <div className="h-4 w-64 rounded bg-slate-800 animate-pulse mb-6" />
+        <div className="space-y-2 mb-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-16 rounded-xl bg-slate-800 animate-pulse" />
+          ))}
+        </div>
+        <div className="h-12 rounded-lg bg-slate-800 animate-pulse" />
+      </div>
+    );
+  }
+
+  if (!inspection) {
     return (
       <div className="px-4 py-8 flex justify-center">
-        <p className="text-slate-400">
-          {loading ? "Loading…" : "Inspection not found"}
-        </p>
+        <p className="text-slate-400">Inspection not found</p>
       </div>
     );
   }
@@ -125,15 +140,15 @@ export default function InspectionPage() {
             >
               <button
                 type="button"
-                onClick={() =>
-                  setActiveRoom(isActive ? null : room)
-                }
-                className="w-full flex items-center gap-3 p-4 text-left"
+                onClick={() => setActiveRoom(isActive ? null : room)}
+                className="w-full flex items-center gap-3 p-4 text-left active:scale-[0.98] transition-transform"
               >
                 <div
                   className={clsx(
                     "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-                    count > 0 ? "bg-proof-green/20 text-proof-green" : "bg-slate-700 text-slate-400"
+                    count > 0
+                      ? "bg-proof-green/20 text-proof-green"
+                      : "bg-slate-700 text-slate-400"
                   )}
                 >
                   {count > 0 ? (
@@ -150,36 +165,45 @@ export default function InspectionPage() {
                 </div>
                 <ChevronRight
                   className={clsx(
-                    "w-5 h-5 shrink-0 text-slate-500 transition-transform",
+                    "w-5 h-5 shrink-0 text-slate-500 transition-transform duration-200",
                     isActive && "rotate-90"
                   )}
                 />
               </button>
-              {isActive && (
-                <div className="px-4 pb-4 pt-0 border-t border-slate-700/50">
-                  <div className="flex flex-wrap gap-2 pt-3">
-                    {roomPhotos.map((p) => (
-                      <a
-                        key={p.evidenceId ?? p.url}
-                        href={p.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block w-16 h-16 rounded-lg bg-slate-700 overflow-hidden shrink-0"
-                      >
-                        <img
-                          src={p.url}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      </a>
-                    ))}
-                    <PhotoCapture
-                      onCapture={handlePhoto}
-                      label="Add photo"
-                    />
-                  </div>
-                </div>
-              )}
+
+              <AnimatePresence initial={false}>
+                {isActive && (
+                  <motion.div
+                    key="body"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-4 pb-4 pt-0 border-t border-slate-700/50">
+                      <div className="flex flex-wrap gap-2 pt-3">
+                        {roomPhotos.map((p) => (
+                          <a
+                            key={p.evidenceId ?? p.url}
+                            href={p.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-16 h-16 rounded-lg bg-slate-700 overflow-hidden shrink-0"
+                          >
+                            <img
+                              src={p.url}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
+                          </a>
+                        ))}
+                        <PhotoCapture onCapture={handlePhoto} label="Add photo" />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           );
         })}
@@ -188,7 +212,7 @@ export default function InspectionPage() {
       <button
         onClick={handleComplete}
         disabled={!hasAnyPhotos || completing}
-        className="w-full py-3 rounded-lg bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-3 rounded-lg bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97] transition-transform"
       >
         {completing
           ? "Generating…"

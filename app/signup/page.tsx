@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion, useAnimation } from "framer-motion";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const router = useRouter();
+  const controls = useAnimation();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,7 +23,12 @@ export default function SignupPage() {
       await signUp(email, password);
       router.replace("/dashboard");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Sign up failed");
+      const msg = err instanceof Error ? err.message : "Sign up failed";
+      setError(msg);
+      controls.start({
+        x: [0, -10, 10, -8, 8, -5, 5, 0],
+        transition: { duration: 0.45 },
+      });
     } finally {
       setLoading(false);
     }
@@ -36,7 +43,7 @@ export default function SignupPage() {
       <p className="text-slate-400 text-sm mb-6">
         Start your first Proof Pack in 10 minutes
       </p>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <motion.form animate={controls} onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-slate-400 text-sm mb-1">Email</label>
           <input
@@ -60,17 +67,15 @@ export default function SignupPage() {
             placeholder="At least 6 characters"
           />
         </div>
-        {error && (
-          <p className="text-red-400 text-sm">{error}</p>
-        )}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 rounded-lg bg-cyan-500 text-slate-900 font-medium hover:bg-cyan-400 disabled:opacity-50"
+          className="w-full py-3 rounded-lg bg-cyan-500 text-slate-900 font-medium hover:bg-cyan-400 disabled:opacity-50 active:scale-[0.97] transition-transform"
         >
           {loading ? "Creating account…" : "Sign up"}
         </button>
-      </form>
+      </motion.form>
       <p className="text-slate-500 text-sm mt-6 text-center">
         Already have an account?{" "}
         <Link href="/login" className="text-cyan-400 hover:underline">

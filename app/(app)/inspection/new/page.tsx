@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { createInspection } from "@/lib/inspections-supabase";
+import { Loader2 } from "lucide-react";
 
 export default function NewInspectionPage() {
   const { user } = useAuth();
@@ -57,7 +58,7 @@ export default function NewInspectionPage() {
             <button
               type="button"
               onClick={() => setType("move-in")}
-              className={`flex-1 py-3 rounded-lg border font-medium ${
+              className={`flex-1 py-3 rounded-lg border font-medium active:scale-[0.97] transition-transform ${
                 type === "move-in"
                   ? "bg-cyan-500/20 border-cyan-500 text-cyan-300"
                   : "bg-slate-800 border-slate-600 text-slate-400"
@@ -68,7 +69,7 @@ export default function NewInspectionPage() {
             <button
               type="button"
               onClick={() => setType("move-out")}
-              className={`flex-1 py-3 rounded-lg border font-medium ${
+              className={`flex-1 py-3 rounded-lg border font-medium active:scale-[0.97] transition-transform ${
                 type === "move-out"
                   ? "bg-cyan-500/20 border-cyan-500 text-cyan-300"
                   : "bg-slate-800 border-slate-600 text-slate-400"
@@ -111,9 +112,16 @@ export default function NewInspectionPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 rounded-lg bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400 disabled:opacity-50"
+          className="w-full py-3 rounded-lg bg-cyan-500 text-slate-900 font-semibold hover:bg-cyan-400 disabled:opacity-50 active:scale-[0.97] transition-transform"
         >
-          {loading ? "Starting…" : "Start inspection"}
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Starting…
+            </span>
+          ) : (
+            "Start inspection"
+          )}
         </button>
       </form>
     </div>
